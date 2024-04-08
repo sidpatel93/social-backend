@@ -10,6 +10,7 @@ import { Server } from "http";
 import cors from "cors";
 import helmet from "helmet";
 import cookieSession from "cookie-session";
+import compression from "compression";
 import HTTP_STATUS from "http-status-codes";
 
 export class backendServer {
@@ -47,7 +48,11 @@ export class backendServer {
     );
   }
 
-  private standardMiddleware(app: Application): void {}
+  private standardMiddleware(app: Application): void {
+    app.use(compression());
+    app.use(json({ limit: "50mb" }));
+    app.use(urlencoded({ extended: true }));
+  }
 
   private routesMiddleware(app: Application): void {}
 
