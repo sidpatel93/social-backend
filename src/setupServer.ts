@@ -7,6 +7,10 @@ import {
   NextFunction,
 } from "express";
 import { Server } from "http";
+import cors from "cors";
+import helmet from "helmet";
+import cookieSession from "cookie-session";
+import HTTP_STATUS from "http-status-codes";
 
 export class backendServer {
   private app: Application;
@@ -23,11 +27,35 @@ export class backendServer {
     this.startServer(this.app);
   }
 
-  private securityMiddleware(app: Application): void {}
+  private securityMiddleware(app: Application): void {
+    app.use(
+      cookieSession({
+        name: "session",
+        keys: ["key1", "key2"],
+        maxAge: 24 * 60 * 60 * 1000,
+        secure: false,
+      })
+    );
+    app.use(helmet());
+    app.use(
+      cors({
+        origin: "*",
+        credentials: true,
+        optionsSuccessStatus: 200,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      })
+    );
+  }
+
   private standardMiddleware(app: Application): void {}
+
   private routesMiddleware(app: Application): void {}
+
   private globalErrorHandler(app: Application): void {}
+
   private startServer(app: Application): void {}
+
   private createSocketIO(httpServer: Server): void {}
+
   private startHttpServer(httpServer: Server): void {}
 }
