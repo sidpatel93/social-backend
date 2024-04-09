@@ -68,7 +68,8 @@ export class backendServer {
     try {
       const httpServer = new http.Server(app);
       this.startHttpServer(httpServer);
-      this.createSocketIO(httpServer);
+      const sockerIO = await this.createSocketIO(httpServer);
+      this.socketIOConnections(sockerIO);
     } catch (error) {
       console.error("Error starting server: ", error);
     }
@@ -94,4 +95,6 @@ export class backendServer {
       console.log(`Server is running on port ${SERVER_PORT}`);
     });
   }
+
+  private socketIOConnections(io: Server): void {}
 }
