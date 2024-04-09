@@ -6,13 +6,16 @@ import {
   Request,
   NextFunction,
 } from "express";
-import { Server } from "http";
+import http from "http";
 import cors from "cors";
 import helmet from "helmet";
 import cookieSession from "cookie-session";
 import compression from "compression";
 import HTTP_STATUS from "http-status-codes";
 import { config } from "./config";
+import { Server } from "socket.io";
+import { createClient } from "redis";
+import { createAdapter } from "@socket.io/redis-adapter";
 
 const SERVER_PORT = 5000;
 
@@ -63,7 +66,7 @@ export class backendServer {
 
   private async startServer(app: Application): Promise<void> {
     try {
-      const httpServer = new Server(app);
+      const httpServer = new http.Server(app);
       this.startHttpServer(httpServer);
       this.createSocketIO(httpServer);
     } catch (error) {
@@ -71,9 +74,22 @@ export class backendServer {
     }
   }
 
-  private createSocketIO(httpServer: Server): void {}
+  private async createSocketIO(httpServer: http.Server): Promise<Server> {
+    const io: Server = new Server(httpServer, {
+      cors: {
+        origin: config.CLIENT_URL,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      },
+    });
 
-  private startHttpServer(httpServer: Server): void {
+    const publishClient = createClient({ url: config.REDIS_HOST });
+    const subscribeClient = publishClient.duplicate();
+    await Promise.all([publishClient.connect(), subscribeClient.connect()]);
+    io.adapter(createAdapter(publishClient, subscribeClient));
+    return io;
+  }
+
+  private startHttpServer(httpServer: http.Server): void {
     httpServer.listen(SERVER_PORT, () => {
       console.log(`Server is running on port ${SERVER_PORT}`);
     });

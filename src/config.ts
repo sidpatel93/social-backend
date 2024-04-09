@@ -9,6 +9,7 @@ class Config {
   public SECRET_KEY_1: string;
   public SECRET_KEY_2: string;
   public CLIENT_URL: string;
+  public REDIS_HOST: string;
 
   constructor() {
     this.DATABASE_URL = process.env.DATABASE_URL || "";
@@ -17,6 +18,7 @@ class Config {
     this.SECRET_KEY_1 = process.env.SECRET_KEY_1 || "";
     this.SECRET_KEY_2 = process.env.SECRET_KEY_2 || "";
     this.CLIENT_URL = process.env.CLIENT_URL || "";
+    this.REDIS_HOST = process.env.REDIS_HOST || "";
   }
 
   public validateConfig(): void {
