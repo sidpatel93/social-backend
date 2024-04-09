@@ -12,6 +12,7 @@ import helmet from "helmet";
 import cookieSession from "cookie-session";
 import compression from "compression";
 import HTTP_STATUS from "http-status-codes";
+import { config } from "./config";
 
 const SERVER_PORT = 5000;
 
@@ -34,9 +35,9 @@ export class backendServer {
     app.use(
       cookieSession({
         name: "session",
-        keys: ["key1", "key2"],
+        keys: [config.SECRET_KEY_1, config.SECRET_KEY_2],
         maxAge: 24 * 60 * 60 * 1000,
-        secure: false,
+        secure: config.NODE_ENV !== "development",
       })
     );
     app.use(helmet());
