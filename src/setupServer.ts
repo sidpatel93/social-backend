@@ -84,7 +84,7 @@ export class backendServer {
         res: Response,
         next: NextFunction
       ) => {
-        log.error(err);
+        log.error(`Error: ${err.message}`);
         if (err instanceof CustomError) {
           return res.status(err.statusCode).json(err.serializedErrors());
         }
@@ -100,23 +100,28 @@ export class backendServer {
       const sockerIO = await this.createSocketIO(httpServer);
       this.socketIOConnections(sockerIO);
     } catch (error) {
-      log.error(error);
+      log.error(`Error starting server: ${error}`);
     }
   }
 
   private async createSocketIO(httpServer: http.Server): Promise<Server> {
-    const io: Server = new Server(httpServer, {
-      cors: {
-        origin: config.CLIENT_URL,
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      },
-    });
+    try {
+      const io: Server = new Server(httpServer, {
+        cors: {
+          origin: config.CLIENT_URL,
+          methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        },
+      });
 
-    const publishClient = createClient({ url: config.REDIS_HOST });
-    const subscribeClient = publishClient.duplicate();
-    await Promise.all([publishClient.connect(), subscribeClient.connect()]);
-    io.adapter(createAdapter(publishClient, subscribeClient));
-    return io;
+      const publishClient = createClient({ url: config.REDIS_HOST });
+      const subscribeClient = publishClient.duplicate();
+      await Promise.all([publishClient.connect(), subscribeClient.connect()]);
+      io.adapter(createAdapter(publishClient, subscribeClient));
+      return io;
+    } catch (error) {
+      log.error(`Error creating socket.io: ${error}`);
+      throw new Error("Error creating socket.io");
+    }
   }
 
   private startHttpServer(httpServer: http.Server): void {
