@@ -1,13 +1,16 @@
 import mongoose from "mongoose";
 import { config } from "./config";
+import logger from "./shared/global/helpers/logger";
+
+const log = logger.createLogger("info");
 
 export default () => {
   const connnect = async () => {
     try {
       await mongoose.connect(config.DATABASE_URL);
-      console.log("Database connected !!");
+      log.info("Connected to database");
     } catch (error) {
-      console.log("Database connection error", error);
+      log.error(`Error connecting to database: ${error}`);
     }
   };
   connnect();

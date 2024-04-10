@@ -21,8 +21,10 @@ import {
   CustomError,
   IErrorResponse,
 } from "./shared/global/helpers/errorHandler";
+import logger from "./shared/global/helpers/logger";
 
 const SERVER_PORT = 5000;
+const log = logger.createLogger("info");
 
 export class backendServer {
   private app: Application;
@@ -82,7 +84,7 @@ export class backendServer {
         res: Response,
         next: NextFunction
       ) => {
-        console.error(err);
+        log.error(err);
         if (err instanceof CustomError) {
           return res.status(err.statusCode).json(err.serializedErrors());
         }
@@ -98,7 +100,7 @@ export class backendServer {
       const sockerIO = await this.createSocketIO(httpServer);
       this.socketIOConnections(sockerIO);
     } catch (error) {
-      console.error("Error starting server: ", error);
+      log.error(error);
     }
   }
 
@@ -119,7 +121,7 @@ export class backendServer {
 
   private startHttpServer(httpServer: http.Server): void {
     httpServer.listen(SERVER_PORT, () => {
-      console.log(`Server is running on port ${SERVER_PORT}`);
+      log.info(`Server is running on port ${SERVER_PORT}`);
     });
   }
 
