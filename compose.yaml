@@ -3,7 +3,7 @@ version: "3.8"
 services:
   mongo:
     image: mongo
-    restart: always
+    # restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
@@ -14,7 +14,7 @@ services:
 
   mongo-express:
     image: mongo-express
-    restart: always
+    # restart: always
     ports:
       - 8081:8081
     environment:
@@ -25,7 +25,7 @@ services:
 
   redis:
     image: redis
-    restart: always
+    # restart: always
     ports:
       - 6379:6379
     volumes:
