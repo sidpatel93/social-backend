@@ -13,4 +13,9 @@ export class Helpers {
   static lowercase(str: string): string {
     return str.toLocaleLowerCase();
   }
+
+  // A function to generate random integers of the desired length
+  static generateRandomIntegers(length: number): number {
+    return Math.floor(Math.random() * Math.pow(10, length));
+  }
 }
